@@ -12,6 +12,7 @@ public class BoardManager : MonoBehaviour
     public Dot dotPrefab;
     public Transform dotsParent;
     public List<Dot> dots = new List<Dot>();
+    public List<Dot> matchDots = new List<Dot>();
 
     void Start()
     {
@@ -19,6 +20,12 @@ public class BoardManager : MonoBehaviour
         DotsInit();
     }
 
+    private void Update()
+    {
+        
+    }
+
+    //보드 초기화 
     void BoardInit()
     {
         for(int x = 0; x < boardSize.x; x++)
@@ -46,7 +53,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-
+    //도트 초기화 
     void DotsInit()
     {
         for(int i = 0; i < boards.Count; i++)
@@ -57,6 +64,51 @@ public class BoardManager : MonoBehaviour
             dot.transform.position = boards[i].transform.position;
             dots.Add(dot);
         }
+
+        CheckMatch();
+    }
+
+    void CheckMatch()
+    {
+        for(int i = 0; i < dots.Count; i++)
+        {
+            Dot target = FindDotObject(dots[i]);
+            if (target == null)
+                continue;
+
+            if (dots[i].dotType == FindDotObject(dots[i]).dotType)
+            {
+                Debug.Log(dots[i].pos + " 와(과) " + FindDotObject(dots[i]).pos + " 는 매치!");
+            }
+        }
+    }
+
+    Dot FindDotObject(Dot origin)
+    {
+        for(int i = 0; i < dots.Count; i++)
+        {
+            Vector2Int pos = GetNeighbor(origin.pos, Direction.RightUp);
+            if (pos == null)
+                continue;
+
+            if (dots[i].pos == pos)
+            {
+                return dots[i];
+            }
+        }
+        return null;
+    }
+
+
+    void CheckBlink()
+    {
+        for(int i = 0; i < boards.Count; i++)
+        {
+            if(!dots[i].gameObject.activeSelf)
+            {
+                Debug.Log(dots[i].pos);
+            }
+        }
     }
 
 
@@ -65,6 +117,38 @@ public class BoardManager : MonoBehaviour
         int x = pos.x;
         int y = pos.y;
         return new Vector3((x - (boardSize.x / 2)) * 1.775f, (y - (boardSize.y / 2)) * 0.975f, 0f);
+    }
+
+    public Vector2Int GetNeighbor(Vector2Int origin, Direction dir)
+    {
+        switch (dir)
+        {
+            case Direction.LeftUp:
+                return new Vector2Int(origin.x - 1, origin.y + 1);
+            case Direction.Up:
+                return new Vector2Int(origin.x, origin.y + 2);
+            case Direction.RightUp:
+                return new Vector2Int(origin.x + 1, origin.y + 1);
+            case Direction.LeftDown:
+                return new Vector2Int(origin.x - 1, origin.y - 1);
+            case Direction.Down:
+                return new Vector2Int(origin.x, origin.y - 2);
+            case Direction.RightDown:
+                return new Vector2Int(origin.x + 1, origin.y - 1);
+            case Direction.RightUpOffset:
+                return new Vector2Int(origin.x + 1, origin.y + 3);
+            case Direction.RightOffset:
+                return new Vector2Int(origin.x + 2, origin.y);
+            case Direction.RightDownOffset:
+                return new Vector2Int(origin.x + 1, origin.y - 3);
+            case Direction.LeftDownOffset:
+                return new Vector2Int(origin.x - 1, origin.y - 3);
+            case Direction.LeftOffset:
+                return new Vector2Int(origin.x - 2, origin.y);
+            case Direction.LeftUpOffset:
+                return new Vector2Int(origin.x - 1, origin.y + 3);
+        }
+        return Vector2Int.zero;
     }
 
 }
