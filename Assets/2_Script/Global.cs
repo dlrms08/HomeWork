@@ -28,12 +28,26 @@ public enum Direction
     LeftDown = 5,
     LeftUp = 6,
     //이웃보다 한칸더 떨어진 방향 (각 요소를 제곱해서 더한후 곱하기10)
-    RightUpOffset = 50,
-    RightOffset = 130,
-    RightDownOffset = 250,
-    LeftDownOffset = 410,
-    LeftOffset = 610,
-    LeftUpOffset = 370,
+    //RightUpOffset = 50,
+    //RightOffset = 130,
+    //RightDownOffset = 250,
+    //LeftDownOffset = 410,
+    //LeftOffset = 610,
+    //LeftUpOffset = 370,
+}
+
+public enum MatchDirection
+{
+    None = 0,
+    Vertical = 1,
+    /// <summary>
+    /// 밑에서 위로 (/)
+    /// </summary>
+    ForwardSlash = 2,
+    /// <summary>
+    /// 위에서 밑으로 (\)
+    /// </summary>
+    BackSlash = 3,
 }
 
 

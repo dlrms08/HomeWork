@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,11 +15,17 @@ public class BoardManager : MonoBehaviour
     public Transform dotsParent;
     public List<Dot> dots = new List<Dot>();
     public List<Dot> matchDots = new List<Dot>();
+    List<Dot> matchBank = new List<Dot>();
 
     void Start()
     {
         BoardInit();
-        DotsInit();
+        while(true)
+        {
+            DotsInit();
+            if (matchBank.Count == 0) break;
+            ClearBoard();
+        }
     }
 
     private void Update()
@@ -66,28 +74,70 @@ public class BoardManager : MonoBehaviour
         }
 
         CheckMatch();
+        if (matchDots.Count > 0)
+            ClearBoard();
     }
 
+    //보드 삭제 
+    void ClearBoard()
+    {
+        for(int i = 0; i < dots.Count ; i++)
+        {
+            Destroy(dots[i].gameObject);
+        }
+        dots.Clear();
+        matchDots.Clear();
+        matchBank.Clear();
+
+        DotsInit();
+    }
+
+    //라인 매치확인
     void CheckMatch()
     {
-        for(int i = 0; i < dots.Count; i++)
+        foreach(var dot in dots)
         {
-            Dot target = FindDotObject(dots[i]);
-            if (target == null)
+            LineMatch(dot);
+        }
+        matchDots = matchBank.Distinct().ToList();
+    }
+
+    //직선매치 확인
+    void LineMatch(Dot dot)
+    {
+        foreach (var it in Enum.GetValues(typeof(Direction)))
+        {
+            Direction dir = (Direction)it;
+            if (dir == Direction.None)
+                continue;
+            
+            var neiver = FindDotObject(dot, dir);
+            if (neiver == null)
                 continue;
 
-            if (dots[i].dotType == FindDotObject(dots[i]).dotType)
+            if (dot.dotType == neiver.dotType)
             {
-                Debug.Log(dots[i].pos + " 와(과) " + FindDotObject(dots[i]).pos + " 는 매치!");
+                var neiver2 = FindDotObject(neiver, dir);
+                if (neiver2 == null)
+                    return;
+
+                if (neiver.dotType == neiver2.dotType)
+                {
+                    Debug.Log(dot.pos + " 와(과) " + neiver.pos + " 와(과) " + neiver2.pos + " 는 매치");
+                    matchBank.Add(dot);
+                    matchBank.Add(neiver);
+                    matchBank.Add(neiver2);
+                }
             }
         }
     }
 
-    Dot FindDotObject(Dot origin)
+    //라인 매치된 블록 찾기
+    Dot FindDotObject(Dot origin, Direction dir)
     {
         for(int i = 0; i < dots.Count; i++)
         {
-            Vector2Int pos = GetNeighbor(origin.pos, Direction.RightUp);
+            Vector2Int pos = GetNeighbor(origin.pos, dir);
             if (pos == null)
                 continue;
 
@@ -99,7 +149,7 @@ public class BoardManager : MonoBehaviour
         return null;
     }
 
-
+    //보드의 빈 공간 찾기 
     void CheckBlink()
     {
         for(int i = 0; i < boards.Count; i++)
@@ -111,7 +161,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-
+    //블록간 거리 계산 
     public Vector3 GetPosition(Vector2Int pos)
     {
         int x = pos.x;
@@ -119,6 +169,7 @@ public class BoardManager : MonoBehaviour
         return new Vector3((x - (boardSize.x / 2)) * 1.775f, (y - (boardSize.y / 2)) * 0.975f, 0f);
     }
 
+    //체크방향 기준 계산 
     public Vector2Int GetNeighbor(Vector2Int origin, Direction dir)
     {
         switch (dir)
@@ -135,18 +186,6 @@ public class BoardManager : MonoBehaviour
                 return new Vector2Int(origin.x, origin.y - 2);
             case Direction.RightDown:
                 return new Vector2Int(origin.x + 1, origin.y - 1);
-            case Direction.RightUpOffset:
-                return new Vector2Int(origin.x + 1, origin.y + 3);
-            case Direction.RightOffset:
-                return new Vector2Int(origin.x + 2, origin.y);
-            case Direction.RightDownOffset:
-                return new Vector2Int(origin.x + 1, origin.y - 3);
-            case Direction.LeftDownOffset:
-                return new Vector2Int(origin.x - 1, origin.y - 3);
-            case Direction.LeftOffset:
-                return new Vector2Int(origin.x - 2, origin.y);
-            case Direction.LeftUpOffset:
-                return new Vector2Int(origin.x - 1, origin.y + 3);
         }
         return Vector2Int.zero;
     }
