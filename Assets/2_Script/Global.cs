@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Global
 {
-    
+    public const float dotSwapSpeed = 16f;
+    public const float dotDropSpeed = 12f;
 }
 
 public enum DotType
@@ -34,20 +35,6 @@ public enum Direction
     //LeftDownOffset = 410,
     //LeftOffset = 610,
     //LeftUpOffset = 370,
-}
-
-public enum MatchDirection
-{
-    None = 0,
-    Vertical = 1,
-    /// <summary>
-    /// 밑에서 위로 (/)
-    /// </summary>
-    ForwardSlash = 2,
-    /// <summary>
-    /// 위에서 밑으로 (\)
-    /// </summary>
-    BackSlash = 3,
 }
 
 

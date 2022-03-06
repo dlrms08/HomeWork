@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -92,8 +91,19 @@ public class BoardManager : MonoBehaviour
         DotsInit();
     }
 
+    //매치 클리어
+    public void ClearMatch()
+    {
+        foreach(var dot in matchDots)
+        {
+            dot.gameObject.SetActive(false);
+        }
+        matchDots.Clear();
+        matchBank.Clear();
+    }
+
     //라인 매치확인
-    void CheckMatch()
+    public void CheckMatch()
     {
         foreach(var dot in dots)
         {
@@ -103,7 +113,7 @@ public class BoardManager : MonoBehaviour
     }
 
     //직선매치 확인
-    void LineMatch(Dot dot)
+    public void LineMatch(Dot dot)
     {
         foreach (var it in Enum.GetValues(typeof(Direction)))
         {
@@ -190,4 +200,22 @@ public class BoardManager : MonoBehaviour
         return Vector2Int.zero;
     }
 
+    public Direction GetDirection(Vector3 startPos, Vector3 endPos)
+    {
+        float degree = GetDirectionDegree(startPos, endPos);
+        if (degree <= 60f) return Direction.RightUp;
+        if (degree <= 120f) return Direction.Up;
+        if (degree <= 180f) return Direction.LeftUp;
+        if (degree <= 240f) return Direction.LeftDown;
+        if (degree <= 300f) return Direction.Down;
+        return Direction.RightDown;
+    }
+
+    public static float GetDirectionDegree(Vector3 origin, Vector3 lookAt)
+    {
+        Vector3 direction = lookAt - origin;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        if (angle < 0f) angle += 360f;
+        return angle;
+    }
 }
