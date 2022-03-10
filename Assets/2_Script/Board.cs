@@ -5,4 +5,5 @@ using UnityEngine;
 public class Board : MonoBehaviour
 {
     public Vector2Int pos;
+    public bool isBlank;
 }

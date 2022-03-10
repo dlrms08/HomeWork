@@ -28,6 +28,9 @@ public enum Direction
     Down = 4,
     LeftDown = 5,
     LeftUp = 6,
+    DoubleDown = 7,
+    DoubleLeftUp = 8,
+    DoubleLeftDown =9 
     //이웃보다 한칸더 떨어진 방향 (각 요소를 제곱해서 더한후 곱하기10)
     //RightUpOffset = 50,
     //RightOffset = 130,
